@@ -1,4 +1,22 @@
 .PHONY: env
-env:
-	mamba env create -f environment.yml -p ~/envs/hw4env
-	bash -ic 'conda activate hw4env;pip install numpy matplotlib sympy pandas seaborn scipy statsmodels sklearn palettable xarray;python -m ipykernel install --user --name hw4env --display-name "IPython - hw4env"'
+env: 
+    conda env create -f environment.yml 
+    conda activate ligo
+    python -m ipykernel install --user --name ligo 
+
+.PHONY: html
+html:
+    jupyter-book build .
+
+.PHONY: html-hub
+html-hub:
+    jupyter-book config sphinx .
+    sphinx-build  . _build/html -D html_baseurl=${JUPYTERHUB_SERVICE_PREFIX}/proxy/absolute/8000
+    cd _build/html
+    python -m http.server
+
+.PHONY: clean
+clean:
+    rm -f figures/*.png
+    rm -f audio/*.wav
+    rm -rf _build/*
